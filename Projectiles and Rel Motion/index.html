@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Kinematics Flashcards</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .card {
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            line-height: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        .card-front {
+            background-color: #f3f4f6; /* light gray */
+            color: #1f2937; /* dark gray */
+        }
+        .card-back {
+            background-color: #1f2937; /* dark gray */
+            color: #f3f4f6; /* light gray */
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4 font-sans">
+
+    <div class="text-center mb-6">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">2D Kinematics Flashcards</h1>
+        <p class="text-xl text-gray-600">Click the card to flip it!</p>
+    </div>
+
+    <div class="w-full max-w-2xl h-80 relative mb-8">
+        <div id="flashcard" class="card w-full h-full relative">
+            <div id="card-front" class="card-face card-front"></div>
+            <div id="card-back" class="card-face card-back"></div>
+        </div>
+    </div>
+
+    <div class="flex space-x-4">
+        <a href="../" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-full transition-colors duration-200 shadow-md flex items-center justify-center">
+            Return to Main
+        </a>
+        <button id="prevBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-full transition-colors duration-200 shadow-md">
+            Previous
+        </button>
+        <button id="shuffleBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-full transition-colors duration-200 shadow-md">
+            Shuffle
+        </button>
+        <button id="nextBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-full transition-colors duration-200 shadow-md">
+            Next
+        </button>
+    </div>
+
+    <script>
+        // The card data is stored here in a simple JavaScript array.
+        // You can easily edit or add more cards by modifying this list.
+        const cards = [
+            { front: "What is a projectile?", back: "Any object that is given an initial velocity and then follows a path determined by the force of gravity and air resistance." },
+            { front: "What is the shape of a projectile's path?", back: "A parabola." },
+            { front: "In projectile motion, what is the horizontal acceleration?", back: "Zero ($a_x = 0$) (assuming no air resistance)." },
+            { front: "In projectile motion, what is the vertical acceleration?", back: "The acceleration due to gravity, $-9.8$ $m/s^2$ (downward)." },
+            { front: "What is the kinematic equation for horizontal displacement ($x$)?", back: "$x = v_{x,0}t$ or $x = v_0\\cos\\theta t$" },
+            { front: "What is the kinematic equation for vertical displacement ($y$)?", back: "$y = v_{y,0}t + \\frac{1}{2}a_y t^2$ or $y = v_0\\sin\\theta t - 4.9t^2$" },
+            { front: "What is the highest point of a projectile's path called?", back: "The apex or summit." },
+            { front: "What is the vertical velocity at the apex of a projectile's path?", back: "Zero ($v_y = 0$)." },
+            { front: "What is the principle of independence of motion?", back: "The horizontal and vertical components of projectile motion are independent of each other." },
+            { front: "What is relative velocity?", back: "The velocity of an object as observed from a particular reference frame." },
+            { front: "Formula for 1D relative velocity (A relative to B)", back: "$v_{AB} = v_A - v_B$" },
+            { front: "Formula for 2D relative velocity (A relative to B)", back: "$v_{AB} = \\vec{v}_A - \\vec{v}_B$" },
+            { front: "How do you find the magnitude of a 2D velocity vector?", back: "$|\\vec{v}| = \\sqrt{v_x^2 + v_y^2}$" },
+            { front: "How do you find the direction of a 2D velocity vector?", back: "$\\theta = \\tan^{-1}(\\frac{v_y}{v_x})$" }
+        ];
+
+        let currentCardIndex = 0;
+        let isFlipped = false;
+
+        const flashcard = document.getElementById('flashcard');
+        const cardFront = document.getElementById('card-front');
+        const cardBack = document.getElementById('card-back');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+
+        // Function to display the current card
+        function displayCard() {
+            if (currentCardIndex < 0) {
+                currentCardIndex = cards.length - 1;
+            } else if (currentCardIndex >= cards.length) {
+                currentCardIndex = 0;
+            }
+            const card = cards[currentCardIndex];
+            cardFront.innerHTML = renderMath(card.front);
+            cardBack.innerHTML = renderMath(card.back);
+            if (isFlipped) {
+                flashcard.classList.remove('flipped');
+                isFlipped = false;
+            }
+        }
+
+        // Simple function to handle flipping the card
+        function flipCard() {
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                flashcard.classList.add('flipped');
+            } else {
+                flashcard.classList.remove('flipped');
+            }
+        }
+
+        // Function to shuffle the cards (Fisher-Yates algorithm)
+        function shuffleCards() {
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            currentCardIndex = 0;
+            displayCard();
+        }
+
+        // Function to render math from string.
+        function renderMath(text) {
+          return text.replace(/\$(.*?)\$/g, (match, p1) => {
+            return `<span class="math-inline">${p1}</span>`;
+          });
+        }
+
+        // Event listeners for user interaction
+        flashcard.addEventListener('click', flipCard);
+        nextBtn.addEventListener('click', () => {
+            currentCardIndex++;
+            displayCard();
+        });
+        prevBtn.addEventListener('click', () => {
+            currentCardIndex--;
+            displayCard();
+        });
+        shuffleBtn.addEventListener('click', shuffleCards);
+
+        // Initial display
+        displayCard();
+    </script>
+</body>
+</html>
