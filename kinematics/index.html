@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kinematics Flashcards</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .card {
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 1.5rem;
+            line-height: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        .card-front {
+            background-color: #f3f4f6; /* light gray */
+            color: #1f2937; /* dark gray */
+        }
+        .card-back {
+            background-color: #1f2937; /* dark gray */
+            color: #f3f4f6; /* light gray */
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4 font-sans">
+
+    <div class="text-center mb-6">
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">Kinematics Flashcards</h1>
+        <p class="text-xl text-gray-600">Click the card to flip it!</p>
+    </div>
+
+    <div class="w-full max-w-2xl h-80 relative mb-8">
+        <div id="flashcard" class="card w-full h-full relative">
+            <div id="card-front" class="card-face card-front"></div>
+            <div id="card-back" class="card-face card-back"></div>
+        </div>
+    </div>
+
+    <div class="flex space-x-4">
+        <button id="prevBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-full transition-colors duration-200 shadow-md">
+            Previous
+        </button>
+        <button id="shuffleBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-full transition-colors duration-200 shadow-md">
+            Shuffle
+        </button>
+        <button id="nextBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-full transition-colors duration-200 shadow-md">
+            Next
+        </button>
+    </div>
+
+    <script>
+        // The card data is stored here in a simple JavaScript array.
+        // You can easily edit or add more cards by modifying this list.
+        const cards = [
+            { front: "What is the SI unit for displacement?", back: "Meters (m)" },
+            { front: "What is the difference between speed and velocity?", back: "Speed is a scalar quantity, while velocity is a vector quantity that includes direction." },
+            { front: "What is the kinematic equation for an object with constant acceleration?", back: "$d = v_0t + \\frac{1}{2}at^2$" },
+            { front: "How do you calculate the acceleration of an object?", back: "Acceleration is the rate of change of velocity: $a = \\frac{\\Delta v}{\\Delta t}$" },
+            { front: "What is the acceleration due to gravity on Earth?", back: "Approximately $9.8 m/s^2$ downward" }
+        ];
+
+        let currentCardIndex = 0;
+        let isFlipped = false;
+
+        const flashcard = document.getElementById('flashcard');
+        const cardFront = document.getElementById('card-front');
+        const cardBack = document.getElementById('card-back');
+        const nextBtn = document.getElementById('nextBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+
+        // Function to display the current card
+        function displayCard() {
+            if (currentCardIndex < 0) {
+                currentCardIndex = cards.length - 1;
+            } else if (currentCardIndex >= cards.length) {
+                currentCardIndex = 0;
+            }
+            const card = cards[currentCardIndex];
+            cardFront.innerHTML = renderMath(card.front);
+            cardBack.innerHTML = renderMath(card.back);
+            if (isFlipped) {
+                flashcard.classList.remove('flipped');
+                isFlipped = false;
+            }
+        }
+
+        // Simple function to handle flipping the card
+        function flipCard() {
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                flashcard.classList.add('flipped');
+            } else {
+                flashcard.classList.remove('flipped');
+            }
+        }
+
+        // Function to shuffle the cards (Fisher-Yates algorithm)
+        function shuffleCards() {
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            currentCardIndex = 0;
+            displayCard();
+        }
+
+        // Function to render math from string.
+        function renderMath(text) {
+          return text.replace(/\$(.*?)\$/g, (match, p1) => {
+            return `<span class="math-inline">${p1}</span>`;
+          });
+        }
+
+        // Event listeners for user interaction
+        flashcard.addEventListener('click', flipCard);
+        nextBtn.addEventListener('click', () => {
+            currentCardIndex++;
+            displayCard();
+        });
+        prevBtn.addEventListener('click', () => {
+            currentCardIndex--;
+            displayCard();
+        });
+        shuffleBtn.addEventListener('click', shuffleCards);
+
+        // Initial display
+        displayCard();
+    </script>
+</body>
+</html>
