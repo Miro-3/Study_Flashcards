@@ -3,169 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newton's Laws Flashcards</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Physics Flashcard Units</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .card {
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-            cursor: pointer;
-        }
-        .card.flipped {
-            transform: rotateY(180deg);
-        }
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            text-align: center;
-            font-size: 1.5rem;
-            line-height: 2rem;
-            border-radius: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-        }
-        .card-front {
-            background-color: #f3f4f6; /* light gray */
-            color: #1f2937; /* dark gray */
-        }
-        .card-back {
-            background-color: #1f2937; /* dark gray */
-            color: #f3f4f6; /* light gray */
-            transform: rotateY(180deg);
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4 font-sans">
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
 
-    <div class="text-center mb-6">
-        <h1 class="text-4xl font-bold text-gray-900 mb-2">Newton's Laws Flashcards</h1>
-        <p class="text-xl text-gray-600">Click the card to flip it!</p>
+    <div class="text-center mb-10">
+        <h1 class="text-5xl font-bold text-gray-900 mb-4">Physics Flashcard Units</h1>
+        <p class="text-xl text-gray-600">Select a unit to start studying.</p>
     </div>
 
-    <div class="w-full max-w-2xl h-80 relative mb-8">
-        <div id="flashcard" class="card w-full h-full relative">
-            <div id="card-front" class="card-face card-front"></div>
-            <div id="card-back" class="card-face card-back"></div>
-        </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+        <!-- Newton's Laws Unit -->
+        <a href="./newtons-laws/" class="block bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <h2 class="text-3xl font-bold text-indigo-600 mb-2">Newton's Laws of Motion</h2>
+            <p class="text-gray-700">Review Newton's three laws, forces, and free-body diagrams.</p>
+        </a>
+
+        <!-- Kinematics Unit -->
+        <a href="./kinematics/" class="block bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <h2 class="text-3xl font-bold text-indigo-600 mb-2">Kinematics</h2>
+            <p class="text-gray-700">Study position, velocity, acceleration, and kinematic equations.</p>
+        </a>
     </div>
 
-    <div class="flex space-x-4">
-        <button id="prevBtn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-full transition-colors duration-200 shadow-md">
-            Previous
-        </button>
-        <button id="shuffleBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-full transition-colors duration-200 shadow-md">
-            Shuffle
-        </button>
-        <button id="nextBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-full transition-colors duration-200 shadow-md">
-            Next
-        </button>
-    </div>
-
-    <script>
-        // The card data is stored here in a simple JavaScript array.
-        // You can easily edit or add more cards by modifying this list.
-        const cards = [
-            { front: "Newton's First Law of Motion (Law of Inertia)", back: "An object at rest stays at rest and an object in motion stays in motion with the same speed and in the same direction unless acted upon by an unbalanced force." },
-            { front: "Inertia", back: "The resistance of any physical object to any change in its state of motion; it is directly proportional to the object's mass." },
-            { front: "Net Force ($F_{net}$)", back: "The vector sum of all the forces acting on a single object." },
-            { front: "Translational Equilibrium", back: "A state in which the net force acting on an object is zero ($F_{net} = 0$), resulting in zero acceleration (constant velocity)." },
-            { front: "Newton's Second Law of Motion", back: "The acceleration of an object is directly proportional to the net force acting on it and inversely proportional to its mass. The mathematical relationship is $F_{net} = ma$." },
-            { front: "SI Unit of Force", back: "The Newton (N), which is defined as the force required to accelerate a 1 kg mass at a rate of 1 $m/s^2$. ($1 N = 1 kg \\cdot m/s^2$)" },
-            { front: "Relationship between Mass and Weight", back: "Mass (kg) is the measure of inertia, while weight (N) is the force of gravity acting on that mass. The formula for weight is $W = mg$." },
-            { front: "Direct Proportionality in $F=ma$", back: "If mass is constant, doubling the net force on an object will double its acceleration." },
-            { front: "Inverse Proportionality in $F=ma$", back: "If the net force is constant, doubling the mass of an object will halve its acceleration." },
-            { front: "Newton's Third Law of Motion", back: "For every action, there is an equal and opposite reaction. These forces occur in pairs, act on different objects, and are equal in magnitude and opposite in direction." },
-            { front: "Action-Reaction Pair", back: "A pair of forces acting on two interacting objects. For example, the Earth pulls a falling apple down (action), and the apple pulls the Earth up (reaction)." },
-            { front: "Why action-reaction forces don't cancel", back: "They act on two different objects, so they cannot be added together to find a net force on a single object." },
-            { front: "Free-Body Diagram", back: "A simplified diagram that represents a single object and all the external forces acting on it. Forces are drawn as vectors originating from the object." },
-            { front: "Normal Force ($F_N$ or $N$)", back: "The perpendicular contact force exerted by a surface on an object. It is a reaction force, not always equal to the object's weight." },
-            { front: "Tension Force ($F_T$ or $T$)", back: "The pulling force transmitted along a rope, string, cable, or similar object." },
-            { front: "Frictional Force ($f$)", back: "A force that opposes the relative motion or tendency of such motion between surfaces in contact. It acts parallel to the surface." },
-            { front: "Static Friction ($f_s$)", back: "The force that prevents an object from starting to move. It has a variable magnitude up to a maximum value, $f_{s,max} = \\mu_s F_N$." },
-            { front: "Kinetic Friction ($f_k$)", back: "The force that opposes a moving object. It has a constant magnitude given by the formula $f_k = \\mu_k F_N$." },
-            { front: "Coefficient of Friction ($\\mu$)", back: "A dimensionless scalar value that describes the ratio of the force of friction between two bodies to the force pressing them together." },
-            { front: "Relationship between static and kinetic friction", back: "For any given pair of surfaces, the maximum static friction is generally greater than the kinetic friction ($\\mu_s > \\mu_k$)." },
-            { front: "Applying Newton's Second Law on an incline", back: "Resolve the force of gravity into components parallel ($mg \\sin\\theta$) and perpendicular ($mg \\cos\\theta$) to the inclined surface." },
-            { front: "Apparent Weight", back: "The force an object exerts on a supporting scale, which is equal to the normal force. In an accelerating elevator, apparent weight can be different from true weight ($mg$)." },
-            { front: "Apparent weight in an elevator accelerating upward", back: "You feel heavier. The normal force is greater than your weight ($F_N = mg + ma$)." },
-            { front: "Apparent weight in an elevator accelerating downward", back: "You feel lighter. The normal force is less than your weight ($F_N = mg - ma$)." },
-            { front: "Terminal Velocity", back: "The constant speed that a freely falling object eventually reaches when the force of air resistance equals the force of gravity, resulting in a net force of zero and zero acceleration." }
-        ];
-
-        let currentCardIndex = 0;
-        let isFlipped = false;
-
-        const flashcard = document.getElementById('flashcard');
-        const cardFront = document.getElementById('card-front');
-        const cardBack = document.getElementById('card-back');
-        const nextBtn = document.getElementById('nextBtn');
-        const prevBtn = document.getElementById('prevBtn');
-        const shuffleBtn = document.getElementById('shuffleBtn');
-
-        // Function to display the current card
-        function displayCard() {
-            if (currentCardIndex < 0) {
-                currentCardIndex = cards.length - 1;
-            } else if (currentCardIndex >= cards.length) {
-                currentCardIndex = 0;
-            }
-            const card = cards[currentCardIndex];
-            cardFront.innerHTML = renderMath(card.front);
-            cardBack.innerHTML = renderMath(card.back);
-            if (isFlipped) {
-                flashcard.classList.remove('flipped');
-                isFlipped = false;
-            }
-        }
-
-        // Simple function to handle flipping the card
-        function flipCard() {
-            isFlipped = !isFlipped;
-            if (isFlipped) {
-                flashcard.classList.add('flipped');
-            } else {
-                flashcard.classList.remove('flipped');
-            }
-        }
-
-        // Function to shuffle the cards (Fisher-Yates algorithm)
-        function shuffleCards() {
-            for (let i = cards.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [cards[i], cards[j]] = [cards[j], cards[i]];
-            }
-            currentCardIndex = 0;
-            displayCard();
-        }
-
-        // Function to render math from string.
-        function renderMath(text) {
-          return text.replace(/\$(.*?)\$/g, (match, p1) => {
-            return `<span class="math-inline">${p1}</span>`;
-          });
-        }
-
-        // Event listeners for user interaction
-        flashcard.addEventListener('click', flipCard);
-        nextBtn.addEventListener('click', () => {
-            currentCardIndex++;
-            displayCard();
-        });
-        prevBtn.addEventListener('click', () => {
-            currentCardIndex--;
-            displayCard();
-        });
-        shuffleBtn.addEventListener('click', shuffleCards);
-
-        // Initial display
-        displayCard();
-    </script>
 </body>
 </html>
